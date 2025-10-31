@@ -1,0 +1,85 @@
+/**
+ * Alynt Enhanced Search - Admin Styles
+ */
+
+.alynt-es-admin-header {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.alynt-es-admin-header h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.alynt-es-shortcode-info {
+    margin-top: 20px;
+}
+
+.alynt-es-shortcode-info code {
+    background: #fff;
+    padding: 3px 6px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-family: Consolas, Monaco, monospace;
+    margin-right: 10px;
+}
+
+.form-table th {
+    width: 200px;
+}
+
+.form-table td fieldset label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.form-table td fieldset label input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.large-text.code {
+    font-family: Consolas, Monaco, monospace;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+}
+
+/* Color picker styling */
+.color-picker {
+    width: 50px;
+    height: 30px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-right: 10px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.color-text {
+    width: 80px;
+    font-family: Consolas, Monaco, monospace;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+.form-table .color-picker + .color-text {
+    margin-left: 0;
+}
+
+/* Color settings section styling */
+#alynt_es_color_section .form-table th {
+    width: 250px;
+}
+
+#alynt_es_color_section .form-table td {
+    padding: 10px 0;
+}
+
+/* Invalid color input styling */
+.color-text.invalid {
+    border-color: #dc3232;
+    box-shadow: 0 0 2px rgba(220, 50, 50, 0.8);
+}
