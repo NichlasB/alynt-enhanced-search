@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-03-24
+
+### Added
+- Cache manager for search result caching with configurable TTL
+- AJAX handler for async search operations without page reloads
+- Uninstall handler for clean plugin removal
+
+### Changed
+- Refactor loader architecture with improved ES integration
+- Enhance query service with better result formatting
+- Improve admin settings sanitization
+- Update build workflow for improved releases
+
+### Fixed
+- JavaScript assets updated for new search features
+
 ## [1.0.0] - 2025-01-01
 
 ### Added
