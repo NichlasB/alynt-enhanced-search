@@ -1,0 +1,186 @@
+/**
+ * Alynt Enhanced Search - Controls Styles
+ */
+
+.alynt-es-toggle-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.alynt-es-toggle-pills {
+    display: flex;
+    border: 1px solid #000000;
+    border-radius: 50px;
+    overflow: hidden;
+    background: transparent;
+    min-width: 300px;
+}
+
+.alynt-es-toggle-pill {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    background: transparent;
+    color: #000000;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    text-align: center;
+}
+
+.alynt-es-toggle-pill:first-child {
+    border-right: 1px solid #000000;
+}
+
+.alynt-es-toggle-pill.active {
+    background: #000000;
+    color: #ffffff;
+}
+
+.alynt-es-toggle-pill.active[data-type="products"]:focus {
+    border-bottom-left-radius: 25px;
+    border-top-left-radius: 25px;
+}
+
+.alynt-es-toggle-pill.active[data-type="general"]:focus {
+    border-bottom-right-radius: 25px;
+    border-top-right-radius: 25px;
+}
+
+.alynt-es-toggle-pill:hover:not(.active),
+.alynt-es-toggle-pill:focus:not(.active) {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.alynt-es-toggle-pill:focus {
+    outline: 2px solid #000000;
+    outline-offset: -2px;
+}
+
+.alynt-es-toggle-pill.active:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: -3px;
+}
+
+.alynt-es-search-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 4rem;
+}
+
+.alynt-es-search-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    border: 2px solid #000000;
+    border-radius: 50px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.alynt-es-search-form:focus-within {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    outline: 2px solid #000000;
+    outline-offset: 3px;
+}
+
+input.alynt-es-search-input {
+    flex: 1;
+    padding: 1.25rem 1.5rem;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 1.1rem;
+    color: #000000;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
+}
+
+.alynt-es-search-input::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 400;
+}
+
+.alynt-es-search-input:-webkit-autofill,
+.alynt-es-search-input:-webkit-autofill:hover,
+.alynt-es-search-input:-webkit-autofill:focus,
+.alynt-es-search-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+    -webkit-text-fill-color: #000000 !important;
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+.alynt-es-search-submit {
+    padding: 1.25rem 1.5rem;
+    border: none;
+    background: #000000;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 50px 50px 0;
+    min-width: 60px;
+}
+
+.alynt-es-search-submit:hover,
+.alynt-es-search-submit:focus {
+    background: #333333;
+    transform: scale(1.05);
+    outline: 2px solid #ffffff;
+    outline-offset: -3px;
+}
+
+.alynt-es-search-submit svg {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.2s ease;
+}
+
+.alynt-es-search-submit:hover svg {
+    transform: scale(1.1);
+}
+
+.alynt-es-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.alynt-es-spinner {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-left: 2px solid #000000;
+    border-radius: 50%;
+    animation: alynt-es-spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes alynt-es-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.screen-reader-text {
+    position: absolute !important;
+    clip: rect(1px, 1px, 1px, 1px);
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden;
+}

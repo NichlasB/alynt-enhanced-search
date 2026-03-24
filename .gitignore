@@ -46,3 +46,31 @@ wp-config.php
 # Note: If you wish to whitelist themes,
 # uncomment the next line
 #/wp-content/themes
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+assets/dist/
+coverage/
+
+# Environment
+.env
+.env.local
+
+# Composer
+composer.phar
+
+# Source maps
+*.map
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -47,7 +47,6 @@
     border: 1px solid #ddd;
 }
 
-/* Color picker styling */
 .color-picker {
     width: 50px;
     height: 30px;
@@ -69,7 +68,6 @@
     margin-left: 0;
 }
 
-/* Color settings section styling */
 #alynt_es_color_section .form-table th {
     width: 250px;
 }
@@ -78,8 +76,12 @@
     padding: 10px 0;
 }
 
-/* Invalid color input styling */
 .color-text.invalid {
     border-color: #dc3232;
     box-shadow: 0 0 2px rgba(220, 50, 50, 0.8);
+}
+
+.alynt-es-field-error {
+    margin: 6px 0 0;
+    color: #d63638;
 }

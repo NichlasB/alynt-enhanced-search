@@ -1,0 +1,144 @@
+/**
+ * Alynt Enhanced Search - Responsive Styles
+ */
+
+@media (max-width: 768px) {
+    .alynt-es-container {
+        padding: 2rem 0.75rem;
+    }
+
+    .alynt-es-main-title {
+        font-size: 2rem;
+    }
+
+    .alynt-es-toggle-pill {
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .alynt-es-search-wrapper {
+        margin-bottom: 3rem;
+    }
+
+    .alynt-es-search-input {
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .alynt-es-search-submit {
+        padding: 1rem 1.25rem;
+        min-width: 50px;
+    }
+
+    .alynt-es-search-submit svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .alynt-es-results-grid {
+        gap: 1rem;
+        grid-template-columns: 1fr;
+    }
+
+    .alynt-es-results[data-columns="2"] .alynt-es-results-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .alynt-es-results[data-columns="3"] .alynt-es-results-grid,
+    .alynt-es-results[data-columns="4"] .alynt-es-results-grid,
+    .alynt-es-results[data-columns="5"] .alynt-es-results-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .alynt-es-card-content {
+        padding: 0.75rem;
+    }
+
+    .alynt-es-card-title {
+        font-size: 1rem;
+    }
+
+    .alynt-es-pagination {
+        gap: 0.25rem;
+    }
+
+    .alynt-es-pagination-item {
+        min-width: 36px;
+        height: 36px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .alynt-es-container {
+        padding: 2rem 0.5rem;
+    }
+
+    .alynt-es-main-title {
+        font-size: 1.75rem;
+    }
+
+    .alynt-es-toggle-pills {
+        width: 100%;
+    }
+
+    .alynt-es-toggle-pill {
+        flex: 1;
+        text-align: center;
+    }
+
+    .alynt-es-search-form {
+        max-width: 100%;
+    }
+
+    .alynt-es-results-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .alynt-es-card-image {
+        height: 180px;
+    }
+
+    .alynt-es-card-image.product-image {
+        height: 250px;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .alynt-es-search-page {
+        color: #000000;
+    }
+
+    .alynt-es-result-card:hover,
+    .alynt-es-result-card:focus {
+        outline: 3px solid #000000;
+    }
+
+    .alynt-es-toggle-pill:focus,
+    .alynt-es-search-submit:focus,
+    .alynt-es-search-button:focus,
+    .alynt-es-search-icon:focus {
+        outline: 3px solid #000000;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .alynt-es-result-card,
+    .alynt-es-toggle-pill,
+    .alynt-es-search-submit,
+    .alynt-es-search-button,
+    .alynt-es-search-icon,
+    .alynt-es-pagination-item {
+        transition: none;
+    }
+
+    .alynt-es-result-card:hover,
+    .alynt-es-result-card:focus {
+        transform: none;
+    }
+
+    .alynt-es-spinner {
+        animation: none;
+        border: 2px solid #000000;
+    }
+}
