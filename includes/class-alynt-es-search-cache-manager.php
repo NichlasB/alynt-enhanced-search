@@ -25,6 +25,7 @@ class Alynt_ES_Search_Cache_Manager {
 	 * @since 1.0.0
 	 */
 	const CACHE_KEYS_OPTION = 'alynt_es_cache_keys';
+	const MAX_CACHE_KEYS    = 200;
 
 	/**
 	 * Generates a unique transient cache key for a search request.
@@ -51,13 +52,23 @@ class Alynt_ES_Search_Cache_Manager {
 	 * @return void
 	 */
 	public static function register_cache_key( $cache_key ) {
-		$cache_keys = self::get_cache_keys();
+		$cache_keys = self::prune_cache_keys( self::get_cache_keys() );
 
 		if ( in_array( $cache_key, $cache_keys, true ) ) {
+			update_option( self::CACHE_KEYS_OPTION, $cache_keys, false );
 			return;
 		}
 
 		$cache_keys[] = $cache_key;
+
+		if ( count( $cache_keys ) > self::MAX_CACHE_KEYS ) {
+			$stale_cache_keys = array_splice( $cache_keys, 0, count( $cache_keys ) - self::MAX_CACHE_KEYS );
+
+			foreach ( $stale_cache_keys as $stale_cache_key ) {
+				delete_transient( $stale_cache_key );
+			}
+		}
+
 		update_option( self::CACHE_KEYS_OPTION, $cache_keys, false );
 	}
 
@@ -94,5 +105,28 @@ class Alynt_ES_Search_Cache_Manager {
 		}
 
 		return $cache_keys;
+	}
+
+	/**
+	 * Removes invalid or expired cache keys from the registry.
+	 *
+	 * @param array $cache_keys Registered cache keys.
+	 *
+	 * @return array
+	 */
+	private static function prune_cache_keys( $cache_keys ) {
+		$active_cache_keys = array();
+
+		foreach ( $cache_keys as $registered_cache_key ) {
+			if ( ! is_string( $registered_cache_key ) || '' === $registered_cache_key ) {
+				continue;
+			}
+
+			if ( false !== get_transient( $registered_cache_key ) ) {
+				$active_cache_keys[] = $registered_cache_key;
+			}
+		}
+
+		return $active_cache_keys;
 	}
 }

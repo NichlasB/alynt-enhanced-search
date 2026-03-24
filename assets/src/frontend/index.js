@@ -3,3 +3,8 @@ import '../../js/search-render.js';
 import '../../js/search-api.js';
 import '../../js/search-events.js';
 import '../../js/search-init.js';
+
+import '../../css/search-shell.css';
+import '../../css/search-controls.css';
+import '../../css/search-results.css';
+import '../../css/search-responsive.css';

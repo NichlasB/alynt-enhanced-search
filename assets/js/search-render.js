@@ -117,16 +117,39 @@
                 return;
             }
 
-            const regex = new RegExp('(' + utils.escapeRegex(searchTerm) + ')', 'gi');
+            var pattern = new RegExp('(' + utils.escapeRegex(searchTerm) + ')', 'gi');
 
             $container.find('.alynt-es-card-title, .alynt-es-card-excerpt').each(function() {
-                const $element = $(this);
-                const originalHtml = $element.html();
-                const highlightedHtml = originalHtml.replace(regex, '<mark class="alynt-es-highlight">$1</mark>');
+                var walker = document.createTreeWalker(this, NodeFilter.SHOW_TEXT, null, false);
+                var textNodes = [];
 
-                if (highlightedHtml !== originalHtml) {
-                    $element.html(highlightedHtml);
+                while (walker.nextNode()) {
+                    textNodes.push(walker.currentNode);
                 }
+
+                textNodes.forEach(function(node) {
+                    var parts = node.textContent.split(pattern);
+
+                    if (parts.length <= 1) {
+                        return;
+                    }
+
+                    var frag = document.createDocumentFragment();
+
+                    parts.forEach(function(part) {
+                        if (pattern.test(part)) {
+                            var mark = document.createElement('mark');
+                            mark.className = 'alynt-es-highlight';
+                            mark.textContent = part;
+                            frag.appendChild(mark);
+                            pattern.lastIndex = 0;
+                        } else {
+                            frag.appendChild(document.createTextNode(part));
+                        }
+                    });
+
+                    node.parentNode.replaceChild(frag, node);
+                });
             });
         }
     };

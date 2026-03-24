@@ -43,7 +43,29 @@ class Alynt_ES_Admin_Settings_Sanitizer {
             $sanitized[$field] = $this->sanitize_color($input, $field, $default);
         }
 
-        $sanitized['custom_css'] = isset($input['custom_css']) ? wp_strip_all_tags($input['custom_css']) : '';
+        $custom_css = isset($input['custom_css']) ? wp_strip_all_tags($input['custom_css']) : '';
+
+        if ( preg_match( '/@import|expression\s*\(|javascript\s*:|behavior\s*:|binding\s*:|url\s*\(\s*["\']?\s*(?:https?:|data:|javascript:)/i', $custom_css ) ) {
+            add_settings_error(
+                'alynt_es_settings',
+                'alynt_es_custom_css_unsafe',
+                __( 'Custom CSS contains disallowed patterns (@import, expression, javascript:, url with external/data URI). The previous value was kept.', 'alynt-enhanced-search' ),
+                'error'
+            );
+            $custom_css = Alynt_ES_Search_Settings::get_settings()['custom_css'];
+        }
+
+        if ( mb_strlen( $custom_css ) > 10000 ) {
+            add_settings_error(
+                'alynt_es_settings',
+                'alynt_es_custom_css_too_long',
+                __( 'Custom CSS must be 10,000 characters or fewer. The previous value was kept.', 'alynt-enhanced-search' ),
+                'error'
+            );
+            $custom_css = Alynt_ES_Search_Settings::get_settings()['custom_css'];
+        }
+
+        $sanitized['custom_css'] = $custom_css;
 
         return $sanitized;
     }
@@ -61,6 +83,8 @@ class Alynt_ES_Admin_Settings_Sanitizer {
         }
 
         $post_types = array_filter(array_map('sanitize_text_field', $input['post_types']));
+        $allowed_post_types = array_keys(get_post_types(array('public' => true)));
+        $post_types = array_values(array_intersect($post_types, $allowed_post_types));
 
         if (empty($post_types)) {
             add_settings_error(

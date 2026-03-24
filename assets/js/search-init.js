@@ -8,8 +8,11 @@
             searchTimeout: null,
             currentPage: 1,
             currentQuery: '',
-            currentType: config.woocommerceEnabled ? 'products' : 'general',
-            isLoading: false
+            currentType: (config.woocommerceEnabled && !config.initialQuery) ? 'products' : 'general',
+            isLoading: false,
+            request: null,
+            afterRender: null,
+            lastSearchWasInitial: false
         };
 
         window.alyntESEvents.bindEvents();

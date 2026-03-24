@@ -42,6 +42,10 @@ class Alynt_ES_Search_Template_Loader {
 			return $template;
 		}
 
+		if ( ! apply_filters( 'alynt_es_override_search_template', true, $template ) ) {
+			return $template;
+		}
+
 		$custom_template = ALYNT_ES_PLUGIN_DIR . 'templates/search.php';
 
 		if ( file_exists( $custom_template ) ) {

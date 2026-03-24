@@ -36,17 +36,38 @@
         $submit.attr('aria-label', isLoading ? config.i18n.searching : config.i18n.submitSearch);
     }
 
+    function renderEmptyState() {
+        window.alyntESRender.renderResults({
+            posts: [],
+            pagination: [],
+            total: 0,
+            search_term: ''
+        });
+    }
+
     window.alyntESApi = {
         performSearch: function(isInitial) {
             const state = window.alyntESState;
             const config = window.alyntESConfig || {};
-
-            if (state.isLoading) {
-                return;
-            }
-
             const $results = $('.alynt-es-results');
             const $loading = $('.alynt-es-loading');
+
+            state.currentQuery = (state.currentQuery || '').trim();
+
+            if (state.request && state.request.readyState !== 4) {
+                state.request.abort();
+            }
+
+            if (!state.currentQuery.length) {
+                state.isLoading = false;
+                state.lastSearchWasInitial = isInitial;
+                state.request = null;
+                $loading.hide();
+                $results.attr('aria-busy', 'false');
+                setSubmitState(false, config);
+                renderEmptyState();
+                return;
+            }
 
             state.isLoading = true;
             state.lastSearchWasInitial = isInitial;
@@ -54,7 +75,7 @@
             $results.attr('aria-busy', 'true');
             setSubmitState(true, config);
 
-            $.ajax({
+            const request = $.ajax({
                 url: config.ajaxUrl,
                 type: 'POST',
                 dataType: 'json',
@@ -67,6 +88,10 @@
                     page: state.currentPage
                 },
                 success: function(response) {
+                    if (state.request !== request) {
+                        return;
+                    }
+
                     if (response.success) {
                         window.alyntESRender.renderResults(response.data);
                         return;
@@ -75,16 +100,28 @@
                     window.alyntESRender.showError(config.i18n.searchFailed, true);
                 },
                 error: function(response, textStatus) {
+                    if (textStatus === 'abort' || state.request !== request) {
+                        return;
+                    }
+
+                    const isSessionExpired = response && response.responseJSON && response.responseJSON.data && response.responseJSON.data.code === 'session_expired';
                     const message = getErrorMessage(response, textStatus, config);
-                    window.alyntESRender.showError(message, true);
+                    window.alyntESRender.showError(message, !isSessionExpired);
                 },
                 complete: function() {
+                    if (state.request !== request) {
+                        return;
+                    }
+
+                    state.request = null;
                     state.isLoading = false;
                     $loading.hide();
                     $results.attr('aria-busy', 'false');
                     setSubmitState(false, config);
                 }
             });
+
+            state.request = request;
         }
     };
 })(jQuery, window);

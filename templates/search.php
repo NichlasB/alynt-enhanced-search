@@ -22,12 +22,13 @@ get_header();
 		</div>
 
 		<?php if ( $woocommerce_enabled ) : ?>
+			<?php $default_products = ! $search_query; ?>
 			<div class="alynt-es-toggle-wrapper">
 				<div class="alynt-es-toggle-pills" role="tablist" aria-label="<?php esc_attr_e( 'Search type', 'alynt-enhanced-search' ); ?>">
-					<button class="alynt-es-toggle-pill active" data-type="products" role="tab" aria-selected="true" aria-controls="alynt-es-results" id="products-tab">
+					<button class="alynt-es-toggle-pill<?php echo $default_products ? ' active' : ''; ?>" data-type="products" role="tab" aria-selected="<?php echo $default_products ? 'true' : 'false'; ?>" aria-controls="alynt-es-results" id="products-tab">
 						<?php esc_html_e( 'Products', 'alynt-enhanced-search' ); ?>
 					</button>
-					<button class="alynt-es-toggle-pill" data-type="general" role="tab" aria-selected="false" aria-controls="alynt-es-results" id="general-tab">
+					<button class="alynt-es-toggle-pill<?php echo $default_products ? '' : ' active'; ?>" data-type="general" role="tab" aria-selected="<?php echo $default_products ? 'false' : 'true'; ?>" aria-controls="alynt-es-results" id="general-tab">
 						<?php esc_html_e( 'General content', 'alynt-enhanced-search' ); ?>
 					</button>
 				</div>
@@ -35,9 +36,10 @@ get_header();
 		<?php endif; ?>
 
 		<div class="alynt-es-search-wrapper">
-			<form class="alynt-es-search-form" role="search" aria-label="<?php esc_attr_e( 'Search', 'alynt-enhanced-search' ); ?>">
+			<form class="alynt-es-search-form" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Search', 'alynt-enhanced-search' ); ?>">
 				<input
 					type="search"
+					name="s"
 					class="alynt-es-search-input"
 					placeholder="<?php esc_attr_e( 'Search...', 'alynt-enhanced-search' ); ?>"
 					value="<?php echo esc_attr( $search_query ); ?>"

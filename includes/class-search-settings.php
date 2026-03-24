@@ -80,7 +80,15 @@ class Alynt_ES_Search_Settings {
             $settings = array();
         }
 
-        return wp_parse_args($settings, self::get_defaults());
+        $merged = wp_parse_args($settings, self::get_defaults());
+
+        if ( ! is_array( $merged['post_types'] ) || empty( $merged['post_types'] ) ) {
+            $merged['post_types'] = self::get_defaults()['post_types'];
+        }
+
+        $merged['results_per_page'] = max( 1, (int) $merged['results_per_page'] );
+
+        return $merged;
     }
 
 	/**

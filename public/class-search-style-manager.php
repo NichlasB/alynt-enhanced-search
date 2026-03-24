@@ -42,7 +42,7 @@ class Alynt_ES_Search_Style_Manager {
         }
 
         if (headers_sent($file, $line)) {
-            error_log(sprintf('[Alynt Enhanced Search] Could not send cache headers because output started in %s on line %d.', $file, $line));
+            error_log(sprintf('[Alynt Enhanced Search] Could not send cache headers because output started in %s on line %d.', basename($file), $line));
             return;
         }
 

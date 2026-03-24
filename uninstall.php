@@ -17,6 +17,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( function_exists( 'current_user_can' ) && ! current_user_can( 'activate_plugins' ) ) {
+	return;
+}
+
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-alynt-es-search-cache-manager.php';
 
 /**
@@ -29,6 +33,23 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/class-alynt-es-search-cache
 function alynt_es_remove_plugin_options() {
 	delete_option( 'alynt_es_settings' );
 	delete_site_option( 'alynt_es_settings' );
+}
+
+function alynt_es_remove_site_plugin_options() {
+	delete_option( 'alynt_es_settings' );
+}
+
+function alynt_es_delete_site_transient_rows() {
+	global $wpdb;
+
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_alynt_es_%'" );
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_alynt_es_%'" );
+}
+
+function alynt_es_cleanup_current_site() {
+	alynt_es_remove_site_plugin_options();
+	Alynt_ES_Search_Cache_Manager::clear_transients();
+	alynt_es_delete_site_transient_rows();
 }
 
 /**
@@ -59,6 +80,19 @@ function alynt_es_clear_caches() {
  */
 function alynt_es_uninstall_plugin() {
 	alynt_es_remove_plugin_options();
+
+	if ( is_multisite() ) {
+		$site_ids = get_sites( array( 'fields' => 'ids' ) );
+
+		foreach ( $site_ids as $site_id ) {
+			switch_to_blog( (int) $site_id );
+			alynt_es_cleanup_current_site();
+			restore_current_blog();
+		}
+	} else {
+		alynt_es_cleanup_current_site();
+	}
+
 	alynt_es_clear_caches();
 }
 

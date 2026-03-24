@@ -71,6 +71,21 @@ class Alynt_ES_Ajax_Handler {
 			);
 		}
 
+		$rate_limit_key = 'alynt_es_rl_' . md5( isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 'unknown' );
+		$rate_limit_count = (int) get_transient( $rate_limit_key );
+
+		if ( $rate_limit_count > 30 ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Too many search requests. Please wait a moment and try again.', 'alynt-enhanced-search' ),
+					'code'    => 'rate_limited',
+				),
+				429
+			);
+		}
+
+		set_transient( $rate_limit_key, $rate_limit_count + 1, 60 );
+
 		if ( is_user_logged_in() && ! current_user_can( 'read' ) ) {
 			wp_send_json_error(
 				array(
@@ -80,14 +95,23 @@ class Alynt_ES_Ajax_Handler {
 			);
 		}
 
-		$search_query = isset( $_POST['query'] ) ? sanitize_text_field( wp_unslash( $_POST['query'] ) ) : '';
+		$search_query = isset( $_POST['query'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['query'] ) ) ), 0, 200 ) : '';
 		$search_type  = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : 'general';
-		$page         = isset( $_POST['page'] ) ? max( 1, intval( wp_unslash( $_POST['page'] ) ) ) : 1;
+		$page         = isset( $_POST['page'] ) ? min( 1000, max( 1, intval( wp_unslash( $_POST['page'] ) ) ) ) : 1;
+
+		if ( 'products' !== $search_type ) {
+			$search_type = 'general';
+		}
 
 		$settings         = Alynt_ES_Search_Settings::get_settings();
 		$results_per_page = (int) $settings['results_per_page'];
-		$cache_key        = Alynt_ES_Search_Cache_Manager::get_cache_key( $search_query, $search_type, $page );
-		$cached_results   = get_transient( $cache_key );
+
+		if ( '' === $search_query ) {
+			wp_send_json_success( $this->query_service->perform_search( $search_query, $search_type, $page, $results_per_page, $settings ) );
+		}
+
+		$cache_key      = Alynt_ES_Search_Cache_Manager::get_cache_key( $search_query, $search_type, $page );
+		$cached_results = get_transient( $cache_key );
 
 		if ( false !== $cached_results ) {
 			wp_send_json_success( $cached_results );

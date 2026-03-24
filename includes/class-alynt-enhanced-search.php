@@ -62,7 +62,20 @@ class Alynt_Enhanced_Search {
 	 */
 	private function load_dependencies() {
 		require_once ALYNT_ES_PLUGIN_DIR . 'includes/class-alynt-es-loader.php';
-		Alynt_ES_Loader::load();
+
+		Alynt_ES_Loader::load_shared();
+
+		if ( wp_doing_ajax() ) {
+			Alynt_ES_Loader::load_ajax();
+			return;
+		}
+
+		if ( is_admin() ) {
+			Alynt_ES_Loader::load_admin();
+			return;
+		}
+
+		Alynt_ES_Loader::load_frontend();
 	}
 
 	/**
@@ -73,16 +86,21 @@ class Alynt_Enhanced_Search {
 	 * @return void
 	 */
 	private function init_hooks() {
-		new Alynt_ES_Shortcode();
-		new Alynt_ES_Search_Template();
-		new Alynt_ES_Ajax_Handler();
+		if ( wp_doing_ajax() ) {
+			new Alynt_ES_Ajax_Handler();
+			return;
+		}
 
 		if ( is_admin() ) {
 			new Alynt_ES_Admin_Settings();
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+			return;
 		}
 
+		new Alynt_ES_Shortcode();
+		new Alynt_ES_Search_Template();
+
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 	}
 
 	/**
@@ -97,23 +115,24 @@ class Alynt_Enhanced_Search {
 			return;
 		}
 
-		wp_enqueue_style( 'alynt-es-search-shell', ALYNT_ES_PLUGIN_URL . 'assets/css/search-shell.css', array(), ALYNT_ES_VERSION );
-
 		if ( ! is_search() ) {
+			wp_enqueue_style( 'alynt-es-search-shell', $this->get_asset_url( 'assets/css/search-shell.css' ), array(), $this->get_asset_version( 'assets/css/search-shell.css' ) );
 			return;
 		}
 
 		$settings = Alynt_ES_Search_Settings::get_settings();
 
-		wp_enqueue_style( 'alynt-es-search-controls', ALYNT_ES_PLUGIN_URL . 'assets/css/search-controls.css', array( 'alynt-es-search-shell' ), ALYNT_ES_VERSION );
-		wp_enqueue_style( 'alynt-es-search-results', ALYNT_ES_PLUGIN_URL . 'assets/css/search-results.css', array( 'alynt-es-search-controls' ), ALYNT_ES_VERSION );
-		wp_enqueue_style( 'alynt-es-search-responsive', ALYNT_ES_PLUGIN_URL . 'assets/css/search-responsive.css', array( 'alynt-es-search-results' ), ALYNT_ES_VERSION );
+		if ( $this->asset_exists( 'assets/dist/frontend/index.css' ) ) {
+			wp_enqueue_style( 'alynt-es-search-shell', $this->get_asset_url( 'assets/dist/frontend/index.css' ), array(), $this->get_asset_version( 'assets/dist/frontend/index.css' ) );
+		} else {
+			$this->enqueue_search_source_styles();
+		}
 
-		wp_enqueue_script( 'alynt-es-search-utils', ALYNT_ES_PLUGIN_URL . 'assets/js/search-utils.js', array( 'jquery' ), ALYNT_ES_VERSION, true );
-		wp_enqueue_script( 'alynt-es-search-render', ALYNT_ES_PLUGIN_URL . 'assets/js/search-render.js', array( 'jquery', 'alynt-es-search-utils' ), ALYNT_ES_VERSION, true );
-		wp_enqueue_script( 'alynt-es-search-api', ALYNT_ES_PLUGIN_URL . 'assets/js/search-api.js', array( 'jquery', 'alynt-es-search-render' ), ALYNT_ES_VERSION, true );
-		wp_enqueue_script( 'alynt-es-search-events', ALYNT_ES_PLUGIN_URL . 'assets/js/search-events.js', array( 'jquery', 'alynt-es-search-api' ), ALYNT_ES_VERSION, true );
-		wp_enqueue_script( 'alynt-es-search-init', ALYNT_ES_PLUGIN_URL . 'assets/js/search-init.js', array( 'jquery', 'alynt-es-search-events' ), ALYNT_ES_VERSION, true );
+		if ( $this->asset_exists( 'assets/dist/frontend/index.js' ) ) {
+			wp_enqueue_script( 'alynt-es-search-init', $this->get_asset_url( 'assets/dist/frontend/index.js' ), array( 'jquery' ), $this->get_asset_version( 'assets/dist/frontend/index.js' ), true );
+		} else {
+			$this->enqueue_search_source_scripts();
+		}
 
 		wp_localize_script(
 			'alynt-es-search-init',
@@ -160,8 +179,17 @@ class Alynt_Enhanced_Search {
 			return;
 		}
 
-		wp_enqueue_style( 'alynt-es-admin-style', ALYNT_ES_PLUGIN_URL . 'assets/css/admin-style.css', array(), ALYNT_ES_VERSION );
-		wp_enqueue_script( 'alynt-es-admin-script', ALYNT_ES_PLUGIN_URL . 'assets/js/admin-script.js', array( 'jquery' ), ALYNT_ES_VERSION, true );
+		if ( $this->asset_exists( 'assets/dist/admin/index.css' ) ) {
+			wp_enqueue_style( 'alynt-es-admin-style', $this->get_asset_url( 'assets/dist/admin/index.css' ), array(), $this->get_asset_version( 'assets/dist/admin/index.css' ) );
+		} else {
+			wp_enqueue_style( 'alynt-es-admin-style', $this->get_asset_url( 'assets/css/admin-style.css' ), array(), $this->get_asset_version( 'assets/css/admin-style.css' ) );
+		}
+
+		if ( $this->asset_exists( 'assets/dist/admin/index.js' ) ) {
+			wp_enqueue_script( 'alynt-es-admin-script', $this->get_asset_url( 'assets/dist/admin/index.js' ), array( 'jquery' ), $this->get_asset_version( 'assets/dist/admin/index.js' ), true );
+		} else {
+			wp_enqueue_script( 'alynt-es-admin-script', $this->get_asset_url( 'assets/js/admin-script.js' ), array( 'jquery' ), $this->get_asset_version( 'assets/js/admin-script.js' ), true );
+		}
 
 		wp_localize_script(
 			'alynt-es-admin-script',
@@ -209,6 +237,81 @@ class Alynt_Enhanced_Search {
 	}
 
 	/**
+	 * Enqueues the unbundled frontend styles as a fallback when dist assets are unavailable.
+	 *
+	 * @return void
+	 */
+	private function enqueue_search_source_styles() {
+		wp_enqueue_style( 'alynt-es-search-shell', $this->get_asset_url( 'assets/css/search-shell.css' ), array(), $this->get_asset_version( 'assets/css/search-shell.css' ) );
+		wp_enqueue_style( 'alynt-es-search-controls', $this->get_asset_url( 'assets/css/search-controls.css' ), array( 'alynt-es-search-shell' ), $this->get_asset_version( 'assets/css/search-controls.css' ) );
+		wp_enqueue_style( 'alynt-es-search-results', $this->get_asset_url( 'assets/css/search-results.css' ), array( 'alynt-es-search-controls' ), $this->get_asset_version( 'assets/css/search-results.css' ) );
+		wp_enqueue_style( 'alynt-es-search-responsive', $this->get_asset_url( 'assets/css/search-responsive.css' ), array( 'alynt-es-search-results' ), $this->get_asset_version( 'assets/css/search-responsive.css' ) );
+	}
+
+	/**
+	 * Enqueues the unbundled frontend scripts as a fallback when dist assets are unavailable.
+	 *
+	 * @return void
+	 */
+	private function enqueue_search_source_scripts() {
+		wp_enqueue_script( 'alynt-es-search-utils', $this->get_asset_url( 'assets/js/search-utils.js' ), array( 'jquery' ), $this->get_asset_version( 'assets/js/search-utils.js' ), true );
+		wp_enqueue_script( 'alynt-es-search-render', $this->get_asset_url( 'assets/js/search-render.js' ), array( 'jquery', 'alynt-es-search-utils' ), $this->get_asset_version( 'assets/js/search-render.js' ), true );
+		wp_enqueue_script( 'alynt-es-search-api', $this->get_asset_url( 'assets/js/search-api.js' ), array( 'jquery', 'alynt-es-search-render' ), $this->get_asset_version( 'assets/js/search-api.js' ), true );
+		wp_enqueue_script( 'alynt-es-search-events', $this->get_asset_url( 'assets/js/search-events.js' ), array( 'jquery', 'alynt-es-search-api' ), $this->get_asset_version( 'assets/js/search-events.js' ), true );
+		wp_enqueue_script( 'alynt-es-search-init', $this->get_asset_url( 'assets/js/search-init.js' ), array( 'jquery', 'alynt-es-search-events' ), $this->get_asset_version( 'assets/js/search-init.js' ), true );
+	}
+
+	/**
+	 * Checks whether a plugin asset exists on disk.
+	 *
+	 * @param string $relative_path Relative asset path.
+	 *
+	 * @return bool
+	 */
+	private function asset_exists( $relative_path ) {
+		return file_exists( $this->get_asset_file_path( $relative_path ) );
+	}
+
+	/**
+	 * Builds the public URL for a plugin asset.
+	 *
+	 * @param string $relative_path Relative asset path.
+	 *
+	 * @return string
+	 */
+	private function get_asset_url( $relative_path ) {
+		return ALYNT_ES_PLUGIN_URL . ltrim( str_replace( '\\', '/', $relative_path ), '/' );
+	}
+
+	/**
+	 * Resolves the cache-busting version string for a plugin asset.
+	 *
+	 * @param string $relative_path Relative asset path.
+	 *
+	 * @return string
+	 */
+	private function get_asset_version( $relative_path ) {
+		$asset_file = $this->get_asset_file_path( $relative_path );
+
+		if ( file_exists( $asset_file ) ) {
+			return (string) filemtime( $asset_file );
+		}
+
+		return ALYNT_ES_VERSION;
+	}
+
+	/**
+	 * Builds the absolute filesystem path for a plugin asset.
+	 *
+	 * @param string $relative_path Relative asset path.
+	 *
+	 * @return string
+	 */
+	private function get_asset_file_path( $relative_path ) {
+		return ALYNT_ES_PLUGIN_DIR . str_replace( '/', DIRECTORY_SEPARATOR, ltrim( $relative_path, '/\\' ) );
+	}
+
+	/**
 	 * Determines whether the shell stylesheet should be enqueued.
 	 *
 	 * @since 1.0.0
@@ -220,16 +323,14 @@ class Alynt_Enhanced_Search {
 			return true;
 		}
 
-		if ( ! is_singular() ) {
-			return false;
+		if ( is_singular() ) {
+			$post = get_post();
+
+			if ( $post instanceof WP_Post && has_shortcode( $post->post_content, 'alynt_es_search' ) ) {
+				return true;
+			}
 		}
 
-		$post = get_post();
-
-		if ( ! $post instanceof WP_Post ) {
-			return false;
-		}
-
-		return has_shortcode( $post->post_content, 'alynt_es_search' );
+		return apply_filters( 'alynt_es_enqueue_shell_assets', false );
 	}
 }
