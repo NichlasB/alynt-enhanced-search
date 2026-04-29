@@ -5,6 +5,23 @@
         return window.alyntESAdminConfig || { i18n: {} };
     }
 
+    function initializeCustomCssEditor(config, onDirtyChange) {
+        if (!config.codeEditor || !config.codeEditor.settings || !window.wp || !wp.codeEditor) {
+            return null;
+        }
+
+        const editor = wp.codeEditor.initialize(config.codeEditor.textareaId, config.codeEditor.settings);
+
+        if (editor && editor.codemirror) {
+            editor.codemirror.on('change', function() {
+                editor.codemirror.save();
+                onDirtyChange();
+            });
+        }
+
+        return editor;
+    }
+
     function getErrorId($input) {
         return $input.attr('id') + '-error';
     }
@@ -61,6 +78,9 @@
         const config = getConfig();
         const $form = $('.alynt-es-settings-form');
         let isDirty = false;
+        const customCssEditor = initializeCustomCssEditor(config, function() {
+            isDirty = true;
+        });
 
         $('.color-picker').on('input change', function() {
             const targetName = $(this).data('target');
@@ -98,6 +118,10 @@
 
         $form.on('submit', function(event) {
             let firstInvalidField = null;
+
+            if (customCssEditor && customCssEditor.codemirror) {
+                customCssEditor.codemirror.save();
+            }
 
             $('.color-text').each(function() {
                 const $input = $(this);

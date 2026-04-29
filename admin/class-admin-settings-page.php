@@ -63,7 +63,6 @@ class Alynt_ES_Admin_Settings_Page {
         ?>
         <div class="wrap">
             <h1><?php esc_html_e('Alynt Enhanced Search Settings', 'alynt-enhanced-search'); ?></h1>
-            <?php settings_errors(); ?>
             <hr class="wp-header-end">
 
             <div class="alynt-es-admin-header">

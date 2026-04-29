@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Manages dynamic CSS generation and cache-control headers for search pages.
+ * Manages dynamic CSS generation for the plugin shell and cache-control headers for search pages.
  *
  * @package Alynt_Enhanced_Search
  * @since   1.0.0
@@ -51,26 +51,29 @@ class Alynt_ES_Search_Style_Manager {
         header('Expires: 0');
     }
 
-	/**
-	 * Enqueues inline dynamic CSS styles generated from plugin settings on search pages.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
+    /**
+     * Enqueues inline dynamic CSS styles generated from plugin settings.
+     *
+     * Shell-level styles can be attached anywhere the shortcode UI is present,
+     * while full search-page custom CSS remains limited to search requests.
+     *
+     * @since 1.0.0
+     *
+     * @return void
+     */
 	public function enqueue_dynamic_styles() {
-        if (!is_search()) {
+        if (!wp_style_is('alynt-es-search-shell', 'enqueued')) {
             return;
         }
 
-        $css = $this->build_dynamic_css(Alynt_ES_Search_Settings::get_settings());
+        $css = $this->build_dynamic_css(Alynt_ES_Search_Settings::get_settings(), is_search());
 
         if ($css !== '') {
             wp_add_inline_style('alynt-es-search-shell', $css);
         }
     }
 
-    private function build_dynamic_css($settings) {
+	private function build_dynamic_css($settings, $is_search_page) {
         $rule_map = $this->get_dynamic_rule_map();
         $css = '';
 
@@ -84,7 +87,7 @@ class Alynt_ES_Search_Style_Manager {
             }
         }
 
-        if (!empty($settings['custom_css'])) {
+		if ($is_search_page && !empty($settings['custom_css'])) {
             $css .= wp_strip_all_tags($settings['custom_css']);
         }
 

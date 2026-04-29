@@ -111,12 +111,8 @@ class Alynt_Enhanced_Search {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
-		if ( ! $this->should_enqueue_search_shell_assets() ) {
-			return;
-		}
-
 		if ( ! is_search() ) {
-			wp_enqueue_style( 'alynt-es-search-shell', $this->get_asset_url( 'assets/css/search-shell.css' ), array(), $this->get_asset_version( 'assets/css/search-shell.css' ) );
+			$this->enqueue_search_shell_styles();
 			return;
 		}
 
@@ -179,6 +175,23 @@ class Alynt_Enhanced_Search {
 			return;
 		}
 
+		$code_editor_settings = wp_enqueue_code_editor(
+			array(
+				'type'       => 'text/css',
+				'codemirror' => array(
+					'indentUnit'     => 4,
+					'tabSize'        => 4,
+					'indentWithTabs' => true,
+					'lineNumbers'    => true,
+					'lineWrapping'   => true,
+					'extraKeys'      => array(
+						'Tab'       => 'defaultTab',
+						'Shift-Tab' => 'indentLess',
+					),
+				),
+			)
+		);
+
 		if ( $this->asset_exists( 'assets/dist/admin/index.css' ) ) {
 			wp_enqueue_style( 'alynt-es-admin-style', $this->get_asset_url( 'assets/dist/admin/index.css' ), array(), $this->get_asset_version( 'assets/dist/admin/index.css' ) );
 		} else {
@@ -195,6 +208,10 @@ class Alynt_Enhanced_Search {
 			'alynt-es-admin-script',
 			'alyntESAdminConfig',
 			array(
+				'codeEditor' => array(
+					'textareaId' => 'alynt_es_custom_css',
+					'settings'   => $code_editor_settings,
+				),
 				'i18n' => array(
 					'invalidColor'   => esc_html__( 'Please enter a six-digit hex color like #1a2b3c.', 'alynt-enhanced-search' ),
 					'unsavedChanges' => esc_html__( 'You have unsaved changes. Leave this page without saving?', 'alynt-enhanced-search' ),
@@ -242,10 +259,19 @@ class Alynt_Enhanced_Search {
 	 * @return void
 	 */
 	private function enqueue_search_source_styles() {
-		wp_enqueue_style( 'alynt-es-search-shell', $this->get_asset_url( 'assets/css/search-shell.css' ), array(), $this->get_asset_version( 'assets/css/search-shell.css' ) );
+		$this->enqueue_search_shell_styles();
 		wp_enqueue_style( 'alynt-es-search-controls', $this->get_asset_url( 'assets/css/search-controls.css' ), array( 'alynt-es-search-shell' ), $this->get_asset_version( 'assets/css/search-controls.css' ) );
 		wp_enqueue_style( 'alynt-es-search-results', $this->get_asset_url( 'assets/css/search-results.css' ), array( 'alynt-es-search-controls' ), $this->get_asset_version( 'assets/css/search-results.css' ) );
 		wp_enqueue_style( 'alynt-es-search-responsive', $this->get_asset_url( 'assets/css/search-responsive.css' ), array( 'alynt-es-search-results' ), $this->get_asset_version( 'assets/css/search-responsive.css' ) );
+	}
+
+	/**
+	 * Enqueues the lightweight shell stylesheet used by shortcode buttons and icons.
+	 *
+	 * @return void
+	 */
+	private function enqueue_search_shell_styles() {
+		wp_enqueue_style( 'alynt-es-search-shell', $this->get_asset_url( 'assets/css/search-shell.css' ), array(), $this->get_asset_version( 'assets/css/search-shell.css' ) );
 	}
 
 	/**
@@ -318,19 +344,4 @@ class Alynt_Enhanced_Search {
 	 *
 	 * @return bool
 	 */
-	private function should_enqueue_search_shell_assets() {
-		if ( is_search() ) {
-			return true;
-		}
-
-		if ( is_singular() ) {
-			$post = get_post();
-
-			if ( $post instanceof WP_Post && has_shortcode( $post->post_content, 'alynt_es_search' ) ) {
-				return true;
-			}
-		}
-
-		return apply_filters( 'alynt_es_enqueue_shell_assets', false );
-	}
 }
