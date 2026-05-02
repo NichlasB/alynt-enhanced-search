@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-02
+
+### Added
+- CodeMirror-powered CSS editor support for the custom CSS admin setting
+- JavaScript synchronization between the CodeMirror instance and the saved textarea value
+
+### Changed
+- Refactor search shell style enqueueing to reduce duplication in plugin bootstrap logic
+- Replace the tracked deployment script with a committed `deploy.example.sh` template for local setup
+- Expand ignored local-only deployment and session artifacts in Git
+
 ## [1.1.0] - 2026-03-24
 
 ### Added
