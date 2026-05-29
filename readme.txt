@@ -4,7 +4,7 @@ Tags: search, ajax search, woocommerce, shortcode
 Requires at least: 6.0
 Tested up to: 6.8.2
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,9 @@ Alynt Enhanced Search adds an AJAX-powered search experience to WordPress with a
 Go to Settings > Enhanced Search in the WordPress admin.
 
 == Changelog ==
+
+= 1.2.1 =
+* Fixed the header shortcode search icon size on screens 999px wide and below.
 
 = 1.1.0 =
 * Added cache manager for search result caching

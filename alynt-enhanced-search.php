@@ -3,7 +3,7 @@
  * Plugin Name:       Alynt Enhanced Search
  * Plugin URI:        https://alynt.com
  * Description:       A minimalistic, AJAX-powered search plugin with grid layout and WooCommerce integration.
- * Version:           1.2.0
+ * Version:           1.2.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Alynt
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ALYNT_ES_VERSION', '1.2.0' );
+define( 'ALYNT_ES_VERSION', '1.2.1' );
 define( 'ALYNT_ES_PLUGIN_FILE', __FILE__ );
 define( 'ALYNT_ES_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ALYNT_ES_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

@@ -137,3 +137,10 @@
     width: 32px;
     height: 32px;
 }
+
+@media (max-width: 999px) {
+    .ct-header .alynt-es-search-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+}

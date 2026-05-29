@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-05-29
+
+### Fixed
+- Scale the header shortcode search icon down from 32px to 20px on screens 999px wide and below
+
 ## [1.2.0] - 2026-05-02
 
 ### Added
